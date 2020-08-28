@@ -1,37 +1,55 @@
 {
-  "name": "@homebound/graphql-typescript-factories",
-  "version": "1.0.0-bump",
+  "name": "@tmikeschu/graphql-typescript-factories",
+  "version": "1.0.0",
   "main": "./build/index.js",
   "types": "./build/",
   "scripts": {
     "build": "rm -rf build; ./node_modules/.bin/tsc",
     "prepare": "npm run build",
-    "test": "./node_modules/.bin/jest --watch",
-    "coverage": "./node_modules/.bin/jest --collectCoverage",
+    "test": "jest --watch",
+    "coverage": "jest --collectCoverage",
     "format": "prettier --write 'src/**/*.{ts,js,tsx,jsx}'",
     "graphql-codegen": "graphql-codegen --config ./integration/graphql-codegen.yml"
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^1.13.1",
     "change-case": "^4.1.1",
-    "graphql": "^14.6.0",
+    "graphql": "^15.3.0",
     "ts-poet": "^3.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^25.1.4",
     "@graphql-codegen/cli": "^1.13.1",
     "@graphql-codegen/typescript-operations": "^1.13.1",
+    "@types/jest": "^26.0.10",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "husky": "^3.0.9",
-    "jest": "^25.2.4",
-    "prettier": "^1.18.2",
-    "ts-jest": "^25.3.0",
-    "typescript": "^3.8.3"
+    "husky": "^4.2.5",
+    "jest": "^26.4.2",
+    "prettier": "^2.1.1",
+    "ts-jest": "^26.3.0",
+    "typescript": "^4.0.2"
   },
   "husky": {
     "hooks": {
       "pre-commit": "npm run format"
     }
-  }
+  },
+  "description": "[![NPM](https://img.shields.io/npm/v/@homebound/graphql-typescript-factories)](https://www.npmjs.com/package/@homebound/graphql-typescript-factories)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tmikeschu/graphql-typescript-factories.git"
+  },
+  "keywords": [
+    "graphql",
+    "typescript",
+    "codegen",
+    "factories",
+    "test"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tmikeschu/graphql-typescript-factories/issues"
+  },
+  "homepage": "https://github.com/tmikeschu/graphql-typescript-factories#readme"
 }
