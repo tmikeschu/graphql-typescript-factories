@@ -10,7 +10,6 @@ import {
   GraphQLOutputType,
   GraphQLScalarType,
   GraphQLSchema,
-  GraphQLType,
 } from "graphql";
 import { PluginFunction, Types } from "@graphql-codegen/plugin-helpers";
 import PluginOutput = Types.PluginOutput;
@@ -259,6 +258,7 @@ function shouldCreateFactory(type: GraphQLNamedType): type is GraphQLObjectType 
     type instanceof GraphQLObjectType &&
     !type.name.startsWith("__") &&
     type.name !== "Mutation" &&
+    type.name !== "Subscription" &&
     type.name !== "Query"
   );
 }
