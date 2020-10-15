@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rm -rf build; ./node_modules/.bin/tsc",
     "prepare": "npm run build",
-    "test": "jest --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "coverage": "jest --collectCoverage",
     "format": "prettier --write 'src/**/*.{ts,js,tsx,jsx}'",
     "graphql-codegen": "graphql-codegen --config ./integration/graphql-codegen.yml"
