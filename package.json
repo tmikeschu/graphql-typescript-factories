@@ -6,11 +6,12 @@
   "scripts": {
     "build": "rm -rf build; ./node_modules/.bin/tsc",
     "prepare": "npm run build",
+    "pretest": "yarn types:build",
     "test": "jest",
     "test:watch": "jest --watch",
     "coverage": "jest --collectCoverage",
     "format": "prettier --write 'src/**/*.{ts,js,tsx,jsx}'",
-    "graphql-codegen": "graphql-codegen --config ./integration/graphql-codegen.yml"
+    "types:build": "graphql-codegen --config ./integration/graphql-codegen.yml"
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^1.17.9",
