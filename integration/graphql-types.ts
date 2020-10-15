@@ -1,4 +1,5 @@
 export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -9,9 +10,8 @@ export type Scalars = {
   Date: any;
 };
 
-/** An entity that will be a mapped typed */
 export type Author = {
-   __typename?: 'Author';
+  __typename?: 'Author';
   id: Scalars['ID'];
   name: Scalars['String'];
   summary: AuthorSummary;
@@ -21,58 +21,30 @@ export type Author = {
   books: Array<Book>;
 };
 
-export type AuthorInput = {
-  name?: Maybe<Scalars['String']>;
-};
-
-/** A DTO that is just some fields */
 export type AuthorSummary = {
-   __typename?: 'AuthorSummary';
+  __typename?: 'AuthorSummary';
   author: Author;
   numberOfBooks: Scalars['Int'];
   amountOfSales?: Maybe<Scalars['Float']>;
 };
 
 export type Book = {
-   __typename?: 'Book';
+  __typename?: 'Book';
   name: Scalars['String'];
-  /** Example of a nullable enum */
   popularity?: Maybe<PopularityDetail>;
-  /** Example of a nullable reference */
   coauthor?: Maybe<Author>;
-  /** Purposefully use [...]-no-bang as a boundary case */
   reviews?: Maybe<Array<Maybe<BookReview>>>;
 };
 
 export type BookReview = {
-   __typename?: 'BookReview';
+  __typename?: 'BookReview';
   rating: Scalars['Int'];
 };
 
-
-export type Mutation = {
-   __typename?: 'Mutation';
-  saveAuthor: SaveAuthorResult;
-};
-
-
-export type MutationSaveAuthorArgs = {
-  input: AuthorInput;
-};
-
-export enum Popularity {
-  Low = 'Low',
-  High = 'High'
-}
-
-export type PopularityDetail = {
-   __typename?: 'PopularityDetail';
-  code: Popularity;
-  name: Scalars['String'];
-};
+export type SearchResult = Author | Book;
 
 export type Query = {
-   __typename?: 'Query';
+  __typename?: 'Query';
   authors: Array<Author>;
   authorSummaries: Array<AuthorSummary>;
   search: Array<SearchResult>;
@@ -88,12 +60,35 @@ export type QuerySearchArgs = {
   query: Scalars['String'];
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  saveAuthor: SaveAuthorResult;
+};
+
+
+export type MutationSaveAuthorArgs = {
+  input: AuthorInput;
+};
+
 export type SaveAuthorResult = {
-   __typename?: 'SaveAuthorResult';
+  __typename?: 'SaveAuthorResult';
   author: Author;
 };
 
-export type SearchResult = Author | Book;
+export type AuthorInput = {
+  name?: Maybe<Scalars['String']>;
+};
+
+export enum Popularity {
+  Low = 'Low',
+  High = 'High'
+}
+
+export type PopularityDetail = {
+  __typename?: 'PopularityDetail';
+  code: Popularity;
+  name: Scalars['String'];
+};
 
 export enum Working {
   Yes = 'YES',
@@ -121,7 +116,7 @@ export function newAuthor(options: AuthorOptions = {}, cache: Record<string, any
   o.popularity = enumOrDetailOfPopularity(options.popularity);
   o.working = options.working ?? null;
   o.birthday = options.birthday ?? null;
-  o.books = (options.books ?? []).map(i => maybeNewBook(i, cache));
+  o.books = (options.books ?? []).map((i) => maybeNewBook(i, cache));
   return o;
 }
 
@@ -182,22 +177,6 @@ function maybeNewOrNullAuthorSummary(
     return newAuthorSummary(value, cache);
   }
 }
-export interface PopularityDetailOptions {
-  __typename?: "PopularityDetail";
-  code?: PopularityDetail["code"];
-  name?: PopularityDetail["name"];
-}
-
-export function newPopularityDetail(
-  options: PopularityDetailOptions = {},
-  cache: Record<string, any> = {},
-): PopularityDetail {
-  const o = (cache["PopularityDetail"] = {} as PopularityDetail);
-  o.__typename = "PopularityDetail";
-  o.code = options.code ?? Popularity.Low;
-  o.name = options.name ?? "Low";
-  return o;
-}
 export interface BookOptions {
   __typename?: "Book";
   name?: Book["name"];
@@ -212,7 +191,7 @@ export function newBook(options: BookOptions = {}, cache: Record<string, any> = 
   o.name = options.name ?? "name";
   o.popularity = enumOrDetailOrNullOfPopularity(options.popularity);
   o.coauthor = maybeNewOrNullAuthor(options.coauthor, cache);
-  o.reviews = (options.reviews ?? []).map(i => maybeNewOrNullBookReview(i, cache));
+  o.reviews = (options.reviews ?? []).map((i) => maybeNewOrNullBookReview(i, cache));
   return o;
 }
 
@@ -308,6 +287,22 @@ function maybeNewOrNullSaveAuthorResult(
   } else {
     return newSaveAuthorResult(value, cache);
   }
+}
+export interface PopularityDetailOptions {
+  __typename?: "PopularityDetail";
+  code?: PopularityDetail["code"];
+  name?: PopularityDetail["name"];
+}
+
+export function newPopularityDetail(
+  options: PopularityDetailOptions = {},
+  cache: Record<string, any> = {},
+): PopularityDetail {
+  const o = (cache["PopularityDetail"] = {} as PopularityDetail);
+  o.__typename = "PopularityDetail";
+  o.code = options.code ?? Popularity.Low;
+  o.name = options.name ?? "Low";
+  return o;
 }
 const enumDetailNameOfPopularity = {
   Low: "Low",
