@@ -73,13 +73,11 @@ function generateEnumDetailHelperFunctions(schema: GraphQLSchema, chunks: Code[]
         }
       }
 
-      function enumOrDetailOrUndefinedOf${enumType.name}(enumOrDetail: ${enumOrDetail} | undefined): ${
-      type.name
-    } | undefined {
+      function enumOrDetailOrNullOf${enumType.name}(enumOrDetail: ${enumOrDetail} | null): ${type.name} | null {
         if (enumOrDetail === undefined) {
           return new${type.name}();
-        } else if (enumOrDetail === undefined) {
-          return undefined;
+        } else if (enumOrDetail === null) {
+          return null;
         } else if (typeof enumOrDetail === "object" && "code" in enumOrDetail) {
           return {
             __typename: "${type.name}",
@@ -104,7 +102,7 @@ function newFactory(type: GraphQLObjectType): Code[] {
     // passed-in value goes through `maybeNewFoo` to ensure `__typename` is set, otherwise Apollo breaks.
     if (fieldType.ofType instanceof GraphQLObjectType) {
       const objectType = fieldType.ofType.name;
-      return `o.${f.name} = (options.${f.name} ?? []).map(i => maybeNewOrUnedined{objectType}(i, cache));`;
+      return `o.${f.name} = (options.${f.name} ?? []).map(i => maybeNewOrNull${objectType}(i, cache));`;
     } else if (fieldType.ofType instanceof GraphQLNonNull && fieldType.ofType.ofType instanceof GraphQLObjectType) {
       const objectType = fieldType.ofType.ofType.name;
       return `o.${f.name} = (options.${f.name} ?? []).map(i => maybeNew${objectType}(i, cache));`;
@@ -118,21 +116,19 @@ function newFactory(type: GraphQLObjectType): Code[] {
   const optionFields: Code[] = Object.values(type.getFields()).map((f) => {
     const fieldType = maybeDenull(f.type);
     if (fieldType instanceof GraphQLObjectType && isEnumDetailObject(fieldType)) {
-      const orUndefined = f.type instanceof GraphQLNonNull ? "" : " | undefined";
-      return code`${f.name}?: ${fieldType.name}Options | ${
-        getRealEnumForEnumDetailObject(fieldType).name
-      }${orUndefined};`;
+      const orNull = f.type instanceof GraphQLNonNull ? "" : " | null";
+      return code`${f.name}?: ${fieldType.name}Options | ${getRealEnumForEnumDetailObject(fieldType).name}${orNull};`;
     } else if (fieldType instanceof GraphQLObjectType) {
-      const orUndefined = f.type instanceof GraphQLNonNull ? "" : " | undefined";
-      return code`${f.name}?: ${fieldType.name}Options${orUndefined};`;
+      const orNull = f.type instanceof GraphQLNonNull ? "" : " | null";
+      return code`${f.name}?: ${fieldType.name}Options${orNull};`;
     } else if (fieldType instanceof GraphQLList) {
-      const keyOrUndefined = f.type instanceof GraphQLNonNull ? "" : " | undefined";
-      const elementOrUndefined = fieldType.ofType instanceof GraphQLNonNull ? "" : " | undefined";
+      const keyOrNull = f.type instanceof GraphQLNonNull ? "" : " | null";
+      const elementOrNull = fieldType.ofType instanceof GraphQLNonNull ? "" : " | null";
       const elementType = maybeDenull(fieldType.ofType);
       if (elementType instanceof GraphQLObjectType) {
-        return code`${f.name}?: Array<${elementType.name}Options${elementOrUndefined}>${keyOrUndefined};`;
+        return code`${f.name}?: Array<${elementType.name}Options${elementOrNull}>${keyOrNull};`;
       } else {
-        return code`${f.name}?: ${type.name}["${f.name}"]${keyOrUndefined};`;
+        return code`${f.name}?: ${type.name}["${f.name}"]${keyOrNull};`;
       }
     } else {
       return code`${f.name}?: ${type.name}["${f.name}"];`;
@@ -164,13 +160,13 @@ function newFactory(type: GraphQLObjectType): Code[] {
         } else if (f.type instanceof GraphQLObjectType) {
           if (isEnumDetailObject(f.type)) {
             const enumType = getRealEnumForEnumDetailObject(f.type);
-            return `o.${f.name} = enumOrDetailOrUndefinedOf${enumType.name}(options.${f.name});`;
+            return `o.${f.name} = enumOrDetailOrNullOf${enumType.name}(options.${f.name});`;
           }
-          return `o.${f.name} = maybeNewOrUndefined{(f.type as any).name}(options.${f.name}, cache);`;
+          return `o.${f.name} = maybeNewOrNull${(f.type as any).name}(options.${f.name}, cache);`;
         } else if (f.type instanceof GraphQLList) {
           return generateListField(f, f.type);
         } else {
-          return `o.${f.name} = options.${f.name} ?? undefined;`;
+          return `o.${f.name} = options.${f.name} ?? null;`;
         }
       })}
       return o;
@@ -188,9 +184,9 @@ function newFactory(type: GraphQLObjectType): Code[] {
       }
     }
     
-    function maybeNewOrUndefined{type.name}(value: ${type.name}Options | undefined, cache: Record<string, any>): ${type.name} | undefined {
+    function maybeNewOrNull${type.name}(value: ${type.name}Options | undefined | null, cache: Record<string, any>): ${type.name} | null {
       if (!value) {
-        return undefined;
+        return null;
       } else if (value.__typename) {
         return value as ${type.name};
       } else {
